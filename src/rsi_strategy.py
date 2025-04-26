@@ -1,3 +1,4 @@
+from metrics import calculate_cagr, calculate_volatility, calculate_sharpe, calculate_max_drawdown
 import pandas as pd
 import pandas_ta as ta
 import os
@@ -67,6 +68,17 @@ if __name__ == "__main__":
     df = generate_signals(df)
     df = simulate_trades(df)
     
+    # Print risk metrics
+    cagr = calculate_cagr(df)
+    vol = calculate_volatility(df)
+    sharpe = calculate_sharpe(df)
+    mdd = calculate_max_drawdown(df)
+
+    print(f"CAGR: {cagr:.2%}")
+    print(f"Volatility: {vol:.2%}")
+    print(f"Sharpe Ratio: {sharpe:.2f}")
+    print(f"Max Drawdown: {mdd:.2%}")
+
     output_path = os.path.join("output", "SPY_rsi_backtest.csv")
     df.to_csv("output/SPY_rsi_backtest.csv") # save results to output folder
     print(f"Backtest complete. Results saved to {output_path}")
