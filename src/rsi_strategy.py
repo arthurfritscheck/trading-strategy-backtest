@@ -8,20 +8,14 @@ def load_data(ticker="SPY"):
     path = os.path.join("data", f"{ticker}.csv")
 
     # skip first 2 rows and set correct headers
-    df = pd.read_csv(
-        path, 
-        skiprows=3,
-        names=["Date", "Close", "High", "Low", "Open", "Volume"],
-        parse_dates=["Date"],
-    )
+    df = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
     
-    df.set_index("Date", inplace=True)
     df.index = pd.to_datetime(df.index)
     return df
 
 # add RSI indicator to dataframe
 def add_rsi(df, length=14):
-    df["RSI"] = ta.rsi(df["Close"], length=length)
+    df["RSI"] = ta.rsi(df["Adj Close"], length=length)
     return df
 
 # generate trading signals based on RSI thresholds
@@ -40,7 +34,7 @@ def simulate_trades(df, initial_cash=10000):
     portfolio = []
 
     for i in range(1, len(df)):
-        price = df["Close"].iloc[i]
+        price = df["Adj Close"].iloc[i]
         signal = df["Signal"].iloc[i]
 
         # Buy if RSI is low and no current position
@@ -68,7 +62,7 @@ if __name__ == "__main__":
     df = generate_signals(df)
     df = simulate_trades(df)
     
-    # Print risk metrics
+    # print risk metrics
     cagr = calculate_cagr(df)
     vol = calculate_volatility(df)
     sharpe = calculate_sharpe(df)
