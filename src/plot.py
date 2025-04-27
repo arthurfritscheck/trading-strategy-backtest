@@ -5,17 +5,13 @@ import os
 
 sns.set(style="whitegrid")
 
-# ------------------------------
 # Load backtest results
-# ------------------------------
 def load_backtest(ticker="SPY"):
     path = os.path.join("output", f"{ticker}_rsi_backtest.csv")
     df = pd.read_csv(path, index_col="Date", parse_dates=True)
     return df
 
-# ------------------------------
 # Plot portfolio value over time
-# ------------------------------
 def plot_portfolio(df):
     plt.figure(figsize=(12, 6))
     plt.plot(df.index, df["Portfolio"], label="Strategy Portfolio", color="navy")
@@ -27,9 +23,7 @@ def plot_portfolio(df):
     plt.savefig("output/portfolio_value.png")
     plt.show()
 
-# ------------------------------
 # Plot RSI with buy/sell signals
-# ------------------------------
 def plot_rsi_signals(df):
     plt.figure(figsize=(12, 6))
     plt.plot(df.index, df["RSI"], label="RSI", color="purple")
@@ -49,9 +43,7 @@ def plot_rsi_signals(df):
     plt.savefig("output/rsi_signals.png")
     plt.show()
 
-# ------------------------------
 # Main execution
-# ------------------------------
 if __name__ == "__main__":
     df = load_backtest("SPY")
     plot_portfolio(df)
