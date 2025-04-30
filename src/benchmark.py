@@ -7,7 +7,7 @@ def simulate_buy_and_hold(df, initial_cash=10000):
     shares_bought = initial_cash / first_price
 
     # Portfolio value over time
-    df["BuyHold_Portfolio"] = shares_bought * df["Adj Close"]
-    df.head()
+    df["Portfolio"] = shares_bought * df["Adj Close"]
+    print(df.head())
     return df
 

@@ -1,9 +1,11 @@
 import os
 import pandas as pd
 from data_download import fetch_data
-from rsi_strategy import add_rsi, generate_signals
+from rsi_strategy import add_rsi, generate_signals as generate_rsi_signals
+from sma_strategy import add_sma, generate_signals as generate_sma_signals
 from benchmark import simulate_buy_and_hold
 from metrics import calculate_cagr, calculate_volatility, calculate_sharpe, calculate_max_drawdown
+from plot import plot_signals, plot_portfolio_comparison
 
 def simulate_trades(df, initial_cash=10000):
     """
@@ -13,7 +15,8 @@ def simulate_trades(df, initial_cash=10000):
     position = 0
     portfolio = []
 
-    df = df.copy().iloc[1:]
+    df = df.copy()
+    #df = df.copy().iloc[1:]
 
     for i in range(len(df)):
         price = df["Adj Close"].iloc[i]
@@ -43,15 +46,25 @@ if __name__ == "__main__":
     df_bh = df.copy()
     # print(df_bh.head())
     df_bh = simulate_buy_and_hold(df_bh)
-    strategies["Buy-and-Hold"] = df_bh["BuyHold_Portfolio"]
+    strategies["Buy and Hold"] = df_bh["Portfolio"]
 
     # backtest rsi strategy    
     df_rsi = df.copy()
     df_rsi = add_rsi(df_rsi)
-    df_rsi = generate_signals(df_rsi)
+    df_rsi = generate_rsi_signals(df_rsi)
     df_rsi = simulate_trades(df_rsi)
     strategies["RSI Strategy"] = df_rsi["Portfolio"]
 
+    plot_signals(df_rsi, indicator_col="RSI", strategy_name="RSI Strategy")
+
+    # sma strategy
+    df_sma = df.copy()
+    df_sma = add_sma(df_sma)
+    df_sma = generate_sma_signals(df_sma)
+    df_sma = simulate_trades(df_sma)
+    strategies["SMA Crossover"] = df_sma["Portfolio"]
+
+    plot_signals(df_sma, indicator_col="SMA50", strategy_name="SMA Crossover")
 
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
@@ -79,3 +92,6 @@ if __name__ == "__main__":
 
         save_df.to_csv(output_path)
         print(f"Backtest for {strategy_name} complete. Results saved to {output_path}")
+    
+
+    plot_portfolio_comparison(strategies, df)
